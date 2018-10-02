@@ -1,0 +1,107 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Trang chủ</title>
+    <link rel="shortcut icon" href="http://hoatdongtrainghiem.hcm.edu.vn/Content/images/logo_so.png">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-uppercase text-center text-primary page-header">tra cứu điểm thi kì thi học sinh giỏi</h2>
+        <div class="col-sm-8 col-sm-offset-2 text-center">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="exampleInputName2">Mã trường</label>
+                            <input type="text" class="form-control" id="matruong">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputName2">Số báo danh</label>
+                            <input type="text" class="form-control" id="sobaodanh">
+                        </div>
+                        <button type="submit" class="btn btn-success" onclick="xemdiem();"><span class="glyphicon glyphicon-search"></span> XEM ĐIỂM</button>
+                    </form>
+                    <p class="text-center text-danger" style="padding-top: 15px;" id="error"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12" id="xemdiem" hidden>
+            <div class="panel panel-default">
+                <div class="panel-body table-responsive">
+                    <table class="table" id="diem">
+                        <thead>
+                            <tr>
+                                <th>SBD</th>
+                                <th>Họ</th>
+                                <th>Tên</th>
+                                <th>Lớp</th>
+                                <th>Mã Trường</th>
+                                <th>Tên Trường</th>
+                                <th>Môn Thi</th>
+                                <th>Điểm Vòng 1</th>
+                                <th>Điểm Vòng 2</th>
+                                <th>Tổng</th>
+                                <th>Xếp Giải</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>                         
+                            <tr>
+                               
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script>
+        function xemdiem() {
+            event.preventDefault();
+            if ($('#sobaodanh').val() == '' || $('#matruong').val() == '') {
+                $('#error').text('Vui lòng nhập');
+                $('#xemdiem').hide();
+            }
+            else {
+                $('#error').text('');
+                $.get("/xemdiem/" + $('#sobaodanh').val().trim() + "/" + $('#matruong').val().trim(), function (data, status) {
+                    if (status == 'success' && data.StatusCode == 200) {
+                        $("#diem > tbody").html("");
+                        $('#diem').append('<tr><td>'                           
+                            + data.Results.SBD + '</td><td>'
+                            + data.Results.Ho + '</td><td>'
+                            + data.Results.Ten + '</td><td>'
+                            + data.Results.Lop + '</td><td>'
+                            + data.Results.MaTruong + '</td><td>'
+                            + data.Results.Truong + '</td><td>'
+                            + data.Results.Mon + '</td><td>'                          
+                            + data.Results.DiemV1 + '</td><td>'
+                            + data.Results.DiemV2 + '</td><td>'
+                            + data.Results.Tong + '</td><td>'
+                            + data.Results.XepGiai + '</td><td>'
+                            + data.Results.GhiChu + '</td ></tr>');                    
+                        $('#xemdiem').show();
+                    }
+                    else {
+                        $("#diem > tbody").html("");
+                        $('#xemdiem').hide();
+                        $('#error').text(data.Message);
+                       
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

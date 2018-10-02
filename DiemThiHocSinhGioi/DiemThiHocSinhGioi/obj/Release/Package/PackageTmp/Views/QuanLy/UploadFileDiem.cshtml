@@ -1,0 +1,135 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Tải điểm lên</title>
+    <link rel="shortcut icon" href="http://hoatdongtrainghiem.hcm.edu.vn/Content/images/logo_so.png">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="exampleInputName2">Chọn file điểm</label>
+                                <input type="file" id="FileUpload">
+                                <p class="help-block text-warning">Vui lòng chọn file excel</p>
+                            </div>
+                            <button type="button" class="btn btn-success" id="submit" onclick="upload();">TẢI LÊN</button>
+                        </form>
+                        <p class="text-center text-danger" id="error"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <a class="btn btn-primary" role="button" href="/logout"><span class="glyphicon glyphicon-off"></span> Đăng Xuất</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-body table-responsive">
+                <table class="table table-striped" id="diem">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>MÔN</th>
+                            <th>SBD</th>
+                            <th>PHÒNG</th>
+                            <th>HỌ</th>
+                            <th>TÊN</th>
+                            <th>LỚP</th>
+                            <th>TRƯỜNG</th>
+                            <th>MÃ TRƯỜNG</th>
+                            <th>ĐV 1</th>
+                            <th>ĐV 2</th>
+                            <th>TỔNG</th>
+                            <th>XẾP GIẢI</th>
+                            <th>GHI CHÚ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            
+                            foreach (var item in ViewBag.DiemThi)
+                            {
+                        <tr>
+                            <td>@item.STT</td>
+                            <td>@item.Mon</td>
+                            <td>@item.SBD</td>
+                            <td>@item.Phong</td>
+                            <td>@item.Ho</td>
+                            <td>@item.Ten</td>
+                            <td>@item.Lop</td>
+                            <td>@item.Truong</td>
+                            <td>@item.MaTruong</td>
+                            <td>@item.DiemV1</td>
+                            <td>@item.DiemV2</td>
+                            <td>@item.Tong</td>
+                            <td>@item.XepGiai</td>
+                            <td>@item.GhiChu</td>
+                        </tr>
+                            }
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <span class="loader" hidden id="loader"></span>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>
+<script>
+    //$(document).ready(function () {
+    //    $('#diem').DataTable();
+    //});
+    function upload() {
+
+        if ($('#FileUpload').val() == '') {
+            $('#error').text("Vui lòng chọn file");
+        }
+        else {         
+            $('#loader').show();
+            $('#error').text("");
+            var formData = new FormData();
+            var FileUpload = $('#FileUpload')[0];
+            formData.append('FileUpload', FileUpload.files[0]);
+            $.ajax({
+                url: '/uploadfilediem',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data, status) {
+                    
+                    $('#loader').hide();
+                    if (status == 'success' && data.StatusCode == 200) {
+                        window.location.reload();
+                    }
+                    else if (data.StatusCode != 200) {
+                        $('#error').text("Có lỗi trong quá trình tải lên");
+                    }
+                    else {
+                        $('#error').text(data.Message);
+                    }
+
+                }
+            });
+        }
+
+    }
+</script>
